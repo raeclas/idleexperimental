@@ -1,0 +1,33 @@
+.inventory{
+    position:fixed;
+    bottom: 0;
+    width: 100%;
+}
+
+.marketplace{
+    display: none;
+}
+
+.messageNoMoney{
+    border: 5px, solid;
+    align-items: center;
+    display: none;
+    
+}
+
+.sellButtons{
+    display: grid;
+    grid-template-columns: repeat(3, 72px);
+    margin-bottom: 10px;
+}
+
+.upgrades{
+    display: grid;
+    grid-template-columns: repeat(1, 96px);
+    margin-bottom: 10px;
+}
+
+button{
+    background-color: white;
+    font-size: 18px;
+}
