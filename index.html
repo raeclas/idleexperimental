@@ -8,32 +8,35 @@
 <body>
     <div class="content">
         <div class="menus">
-            <div class="main">
-                <button id="click">Number Go Up</button>
-                <button id="visit">Visit Marketplace</button>
-            </div>
+                <div class="main">
+                    <button id="click">Number Go Up</button>
+                    <button id="visit">Visit Marketplace</button>
+                </div>
 
             <div class="marketplace">
                 <div class="sellButtons">
-                    <button id="sell1">Cash in [1]</button>
-                    <button id="sell10">Cash in [10]</button>
                     <button id="sellAll">Cash in All</button>
                 </div>
 
                 <div class="upgrades">
-                    <button id="autoNumber">Buy [1] Auto Number ($20)</button>
+                    <div class="upgradesContainer">
+                        <button id="autoNumber">Buy [1] Auto Number ($20)</button>
+                    </div>
                 </div>   
 
                 <button id="return">Return</button>
                 <div class="messageNoMoney">Not enough Money</div>
+                
             </div>
-             
+
         </div>
+
+        <button onclick="saveGame()">Save Game</button>
 
         <div class="inventory">
             <p id="money">Money: $0</p>
             <p id="number">Number: 0</p>
         </div>
-    
+
     </div>
 </body>

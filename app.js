@@ -19,20 +19,6 @@ $(document).ready(function(){
         changeMarket(); 
     });
 
-    $("#sell1").click(function(){
-        number--;
-        money += numberPrice;
-        changeInventory();
-        changeMarket();
-    });
-
-    $("#sell10").click(function(){
-        number-= 10;
-        money += numberPrice * 10;
-        changeInventory();
-        changeMarket();
-    });
-
     $("#sellAll").click(function(){
         money += numberPrice * number
         number = 0
@@ -49,6 +35,9 @@ $(document).ready(function(){
         }else{
             money -= autoNumberPrice;
             autoNumberPlus++;
+            autoNumberPrice = 1.1 * autoNumberPrice
+            autoNumberPrice = Math.round(autoNumberPrice)
+            $("#autoNumber").html("Buy [1] Auto Number ($" + autoNumberPrice + ")");
             $(".messageNoMoney").css("display", "none");
             changeInventory();
             changeMarket();
@@ -82,16 +71,6 @@ $(document).ready(function(){
         }else{
             $("#sellAll").css("display", "none");
         }
-        if(number >= 1){
-            $("#sell1").css("display", "block");
-        }else{
-            $("#sell1").css("display", "none");
-        }
-        if(number >= 10){
-            $("#sell10").css("display", "block");
-        }else{
-            $("#sell10").css("display", "none");
-        }
 
         if(money >= autoNumberPrice){
             $("#autoNumber").css("display", "block");
@@ -107,4 +86,20 @@ $(document).ready(function(){
         $("." + menu).css("display", "block");
         return menu;
     }
+
+    function saveGame(){
+        var gameSave = {
+            number: number,
+            money: money,
+            numberPlus: numberPlus,
+            autoNumberPlus: autoNumberPlus,
+            autoNumberPrice: autoNumberPrice,
+            numberPrice: numberPrice
+        };
+        localStorage.setItem("gameSave", JSON.stringify(gameSave));
+    }
+
+    setInterval(function(){
+        saveGame();
+    }, 30000); // 30000ms = 30s
 });

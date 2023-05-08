@@ -4,21 +4,34 @@
     width: 100%;
 }
 
+#money{
+    text-align: center;
+    font-size: 32px;
+}
+#number{
+    text-align: center;
+    font-size: 32px;
+}
 .marketplace{
     display: none;
 }
-
+.main{
+    background-color: rgb(121,121,121);
+}
 .messageNoMoney{
     border: 5px, solid;
     align-items: center;
     display: none;
     
 }
-
+#sellAll{
+    text-align:center;
+}
 .sellButtons{
     display: grid;
     grid-template-columns: repeat(3, 72px);
     margin-bottom: 10px;
+    text-align: center
 }
 
 .upgrades{
