@@ -4,18 +4,19 @@ $(document).ready(function(){
     var numberPlus = 1;
     var autoNumber = 0;
     var autoNumberPlus = 0;
-    var autoNumberIncrementPrice = 500;
+    var autoNumberIncrementPrice = 40;
     var autoNumberIncrementCount = 0;
     var autoNumberPrice = 20;
     var numberPrice = 1;
     var menu;
+    var updateRate = 1000
 
     setInterval(function(){
-        number += autoNumberPlus;
+        number += Math.ceil(autoNumberPlus * (updateRate/1000));
         changeInventory();
         changeMarket();
         document.title = number + " - Number Go Up"
-    }, 1000);
+    }, updateRate);
 
     $('#click').click(function(){
         number += numberPlus;
@@ -38,11 +39,13 @@ $(document).ready(function(){
         if (money < autoNumberIncrementPrice){
             $(".messageNoMoney").css("display", "block");
         }else{
-            autoNumberIncrementCount ++
-            money -= autoNumberIncrementPrice
-            autoNumberPlus = autoNumberPlus * (autoNumberIncrementCount)
-            autoNumberIncrementPrice = math.round(autoNumberIncrementPrice*1.15)
-            
+            autoNumberIncrementCount++;
+            money -= autoNumberIncrementPrice;
+            if(autoNumberIncrementCount > 0){
+                var totalIncrease = autoNumber * autoNumberIncrementCount;
+                autoNumberPlus += (totalIncrease-(autoNumber*(autoNumberIncrementCount-1)));
+            }
+            autoNumberIncrementPrice = Math.round(autoNumberIncrementPrice * 1.15);
         }
     });
 
@@ -53,10 +56,14 @@ $(document).ready(function(){
             $(".messageNoMoney").css("font-size", "20px")
         }else{
             money -= autoNumberPrice;
-            autoNumberPlus++;
+            if (autoNumberIncrementCount > 0){
+                autoNumberPlus += (1+autoNumberIncrementCount);
+            }else{
+                autoNumberPlus ++
+            }
+            
             autoNumber++;
-            autoNumberPrice = 1.1 * autoNumberPrice;
-            autoNumberPrice = Math.round(autoNumberPrice);
+            autoNumberPrice = Math.round(1.1 * autoNumberPrice);
             $(".messageNoMoney").css("display", "none");
             changeInventory();
             changeMarket();
@@ -82,7 +89,8 @@ $(document).ready(function(){
         }else{
             $("#number").html("Number: " + number);
         }
-        $("#autoNumber").html("Buy [1] Auto Number ($" + autoNumberPrice + ")" + "<br>" + "["+autoNumber+"]");
+        $("#autoNumber").html("Buy [1] Auto Number ($" + autoNumberPrice + ")" + "<br>" + "[" + autoNumber + "]" + "<br>" + "Increments by " + (1+autoNumberIncrementCount) + " per second" + "<br>" + "Total: " + (autoNumber*(1+autoNumberIncrementCount))); 
+
         $("#addAutoNumberPlus1").html("Increase Auto Number increment by 1 ($" + autoNumberIncrementPrice + ")" + "<br>" + "["+autoNumberIncrementCount+"]");
     }
 
@@ -129,7 +137,8 @@ $(document).ready(function(){
             autoNumberPrice: autoNumberPrice,
             numberPrice: numberPrice,
             autoNumber: autoNumber,
-            autoNumberIncrementPrice: autoNumberIncrementPrice
+            autoNumberIncrementPrice: autoNumberIncrementPrice,
+            autoNumberIncrementCount: autoNumberIncrementCount
         };
         localStorage.setItem("gameSave", JSON.stringify(gameSave));
     }
@@ -144,6 +153,7 @@ $(document).ready(function(){
         if (typeof savedGame.NumberPrice !== "undefined") NumberPrice = savedGame.NumberPrice;
         if (typeof savedGame.autoNumber !== "undefined") autoNumber = savedGame.autoNumber;
         if (typeof savedGame.autoNumberIncrementPrice !== "undefined") autoNumberIncrementPrice = savedGame.autoNumberIncrementPrice;
+        if (typeof savedGame.autoNumberIncrementCount !== "undefined") autoNumberIncrementCount = savedGame.autoNumberIncrementCount;
     }
     //auto save
     setInterval(function(){

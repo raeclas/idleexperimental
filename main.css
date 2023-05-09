@@ -19,11 +19,18 @@
     background-color: rgb(121,121,121);
 }
 .messageNoMoney{
+    font-size: 20px;
+    text-align: center;
     border: 5px, solid;
     align-items: center;
     display: none;
-    
 }
+
+.upgradesContainer button {
+    display: inline-block;
+    margin-right: 10px;
+}
+
 #sellAll{
     text-align:center;
 }
@@ -32,12 +39,6 @@
     grid-template-columns: repeat(3, 72px);
     margin-bottom: 10px;
     text-align: center
-}
-
-.upgrades{
-    display: grid;
-    grid-template-columns: repeat(1, 96px);
-    margin-bottom: 10px;
 }
 
 button{
