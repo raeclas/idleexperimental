@@ -2,6 +2,7 @@ $(document).ready(function(){
     var number = 0;
     var money = 0;
     var numberPlus = 1;
+    var autoNumber = 0;
     var autoNumberPlus = 0;
     var autoNumberPrice = 20;
     var numberPrice = 1;
@@ -11,6 +12,7 @@ $(document).ready(function(){
         number += autoNumberPlus;
         changeInventory();
         changeMarket();
+        document.title = number + " - Number Go Up"
     }, 1000);
 
     $('#click').click(function(){
@@ -26,6 +28,10 @@ $(document).ready(function(){
         changeMarket();
     });
 
+    $("#saveGame").click(function(){
+        saveGame();
+    });
+
     $("#autoNumber").click(function(){
         if(money < autoNumberPrice
             ){
@@ -35,9 +41,9 @@ $(document).ready(function(){
         }else{
             money -= autoNumberPrice;
             autoNumberPlus++;
-            autoNumberPrice = 1.1 * autoNumberPrice
-            autoNumberPrice = Math.round(autoNumberPrice)
-            $("#autoNumber").html("Buy [1] Auto Number ($" + autoNumberPrice + ")");
+            autoNumber++;
+            autoNumberPrice = 1.1 * autoNumberPrice;
+            autoNumberPrice = Math.round(autoNumberPrice);
             $(".messageNoMoney").css("display", "none");
             changeInventory();
             changeMarket();
@@ -63,7 +69,14 @@ $(document).ready(function(){
         }else{
             $("#number").html("Number: " + number);
         }
+        $("#autoNumber").html("Buy [1] Auto Number ($" + autoNumberPrice + ")" + "<br>" + "["+autoNumber+"]");
     }
+
+    window.onload = function() {
+        loadGame();
+        changeInventory();
+        changeMarket();
+    };
 
     function changeMarket(){
         if(number > 0){
@@ -88,18 +101,55 @@ $(document).ready(function(){
     }
 
     function saveGame(){
+        console.log("Saving game...");
         var gameSave = {
             number: number,
             money: money,
             numberPlus: numberPlus,
             autoNumberPlus: autoNumberPlus,
             autoNumberPrice: autoNumberPrice,
-            numberPrice: numberPrice
+            numberPrice: numberPrice,
+            autoNumber: autoNumber
         };
         localStorage.setItem("gameSave", JSON.stringify(gameSave));
     }
 
+    function loadGame(){
+        var savedGame = JSON.parse(localStorage.getItem("gameSave"));
+        if (typeof savedGame.number !== "undefined") number = savedGame.number;
+        if (typeof savedGame.money !== "undefined") money = savedGame.money;
+        if (typeof savedGame.numberPlus !== "undefined") numberPlus = savedGame.numberPlus;
+        if (typeof savedGame.autoNumberPlus !== "undefined") autoNumberPlus = savedGame.autoNumberPlus;
+        if (typeof savedGame.autoNumberPrice !== "undefined") autoNumberPrice = savedGame.autoNumberPrice;
+        if (typeof savedGame.NumberPrice !== "undefined") NumberPrice = savedGame.NumberPrice;
+        if (typeof savedGame.autoNumber !== "undefined") autoNumber = savedGame.autoNumber;
+    }
+    //auto save
     setInterval(function(){
         saveGame();
     }, 30000); // 30000ms = 30s
+
+    $("#resetGame").click(function(){
+        resetGame();
+    }); //reset button
+
+
+    function resetGame(){ //reset game
+        console.log("hello world");
+        if (confirm("Are you sure you want to reset?")){
+            var gameSave = {};
+            localStorage.setItem("gameSave", JSON.stringify(gameSave)); 
+            location.reload();
+        }
+    }  
+
+
+
+    document.addEventListener("keydown", function(event){
+        if (event.ctrlKey && event.which == 83) {//ctrl + s pressed
+            event.preventDefault();
+            saveGame();
+        }
+    }, false)
 });
+
