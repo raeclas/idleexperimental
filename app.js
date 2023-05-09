@@ -4,6 +4,8 @@ $(document).ready(function(){
     var numberPlus = 1;
     var autoNumber = 0;
     var autoNumberPlus = 0;
+    var autoNumberIncrementPrice = 500;
+    var autoNumberIncrementCount = 0;
     var autoNumberPrice = 20;
     var numberPrice = 1;
     var menu;
@@ -32,9 +34,20 @@ $(document).ready(function(){
         saveGame();
     });
 
+    $("#addAutoNumberPlus1").click(function(){
+        if (money < autoNumberIncrementPrice){
+            $(".messageNoMoney").css("display", "block");
+        }else{
+            autoNumberIncrementCount ++
+            money -= autoNumberIncrementPrice
+            autoNumberPlus = autoNumberPlus * (autoNumberIncrementCount)
+            autoNumberIncrementPrice = math.round(autoNumberIncrementPrice*1.15)
+            
+        }
+    });
+
     $("#autoNumber").click(function(){
-        if(money < autoNumberPrice
-            ){
+        if(money < autoNumberPrice){
             $(".messageNoMoney").css("display", "block");
             $(".messageNoMoney").css("text-align", "center");
             $(".messageNoMoney").css("font-size", "20px")
@@ -70,6 +83,7 @@ $(document).ready(function(){
             $("#number").html("Number: " + number);
         }
         $("#autoNumber").html("Buy [1] Auto Number ($" + autoNumberPrice + ")" + "<br>" + "["+autoNumber+"]");
+        $("#addAutoNumberPlus1").html("Increase Auto Number increment by 1 ($" + autoNumberIncrementPrice + ")" + "<br>" + "["+autoNumberIncrementCount+"]");
     }
 
     window.onload = function() {
@@ -92,6 +106,11 @@ $(document).ready(function(){
             $("#autoNumber").css("display", "block");
             $("#autoNumber").css("opacity", .5);
         }
+        if (money>= autoNumberIncrementPrice){
+            $("#addAutoNumberPlus1").css("opacity", 1)
+        }else{
+            $("#addAutoNumberPlus1").css("opacity", 0.5);
+        }
     }
 
     function switchMenu(menu){
@@ -109,7 +128,8 @@ $(document).ready(function(){
             autoNumberPlus: autoNumberPlus,
             autoNumberPrice: autoNumberPrice,
             numberPrice: numberPrice,
-            autoNumber: autoNumber
+            autoNumber: autoNumber,
+            autoNumberIncrementPrice: autoNumberIncrementPrice
         };
         localStorage.setItem("gameSave", JSON.stringify(gameSave));
     }
@@ -123,6 +143,7 @@ $(document).ready(function(){
         if (typeof savedGame.autoNumberPrice !== "undefined") autoNumberPrice = savedGame.autoNumberPrice;
         if (typeof savedGame.NumberPrice !== "undefined") NumberPrice = savedGame.NumberPrice;
         if (typeof savedGame.autoNumber !== "undefined") autoNumber = savedGame.autoNumber;
+        if (typeof savedGame.autoNumberIncrementPrice !== "undefined") autoNumberIncrementPrice = savedGame.autoNumberIncrementPrice;
     }
     //auto save
     setInterval(function(){
@@ -142,8 +163,6 @@ $(document).ready(function(){
             location.reload();
         }
     }  
-
-
 
     document.addEventListener("keydown", function(event){
         if (event.ctrlKey && event.which == 83) {//ctrl + s pressed
