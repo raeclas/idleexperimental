@@ -1,29 +1,63 @@
 $(document).ready(function(){
     var number = 0;
     var money = 0;
-    var numberPlus = 1;
-    var autoNumber = 0;
-    var autoNumberPlus = 0;
-    var autoNumberIncrementPrice = 40;
-    var autoNumberIncrementCount = 0;
-    var autoNumberPrice = 20;
-    var numberPrice = 1;
+    let numberPlus = 1;
+    let numberPrice = 1;
+    var autoNumberPlus = 0; // number per sec
     var menu;
-    var updateRate = 1000
+    var lastFrameTime = 0;
+    var autoNumberInterval = 1000;
+    var timeSinceLastAutoIncrease = 0;
+    var upgrades = {
+        name: [
+            "autoNumber",
+            "autoNumberIncrement"
+        ],
+        count: [
+            0,
+            0
+        ],
+        cost: [
+            20,
+            40
+        ],
+        costIncrement: [
+            1.1,
+            1.15
+        ]
 
-    setInterval(function(){
-        number += Math.ceil(autoNumberPlus * (updateRate/1000));
+
+    }
+
+    
+    function update(currentTime) {
+        var elapsedTime = currentTime - lastFrameTime;
+        timeSinceLastAutoIncrease += elapsedTime;
+    
+        if (timeSinceLastAutoIncrease >= autoNumberInterval) {
+            number += (autoNumberPlus);
+            number = Math.ceil(number)
+            timeSinceLastAutoIncrease -= autoNumberInterval;
+          }
+    
         changeInventory();
         changeMarket();
-        document.title = number + " - Number Go Up"
-    }, updateRate);
-
+        document.title = number + " - Number Go Up";
+    
+        lastFrameTime = currentTime;
+        requestAnimationFrame(update);
+      }
+    
+      // Start the animation loop
+      lastFrameTime = performance.now();
+      requestAnimationFrame(update);
+    
     $('#click').click(function(){
         number += numberPlus;
         changeInventory();
         changeMarket(); 
     });
-
+    
     $("#sellAll").click(function(){
         money += numberPrice * number
         number = 0
@@ -31,42 +65,61 @@ $(document).ready(function(){
         changeMarket();
     });
 
+    $("#buyMax").click(function() {
+        for (i = 0; i < upgrades.cost.length; i++){
+            buyMaxUpgrade(i);
+        }
+    });
+
+    function lowestNumber(itemPrice, money){
+        return Math.floor(money/itemPrice)
+    }
+
+    function buyMaxUpgrade(index){
+        totalCost = upgrades.cost[index]
+        if (money > upgrades.cost[index]){
+            while (money > totalCost){
+                money -= upgrades.cost[index];
+                upgrades.cost[index] = Math.round(upgrades.costIncrement[index] * upgrades.cost[index]);
+                totalCost += upgrades.cost[index];
+                upgrades.count[index] ++ ;
+                autoNumberPlus = upgrades.count[0] * (1+upgrades.count[1]);
+                changeInventory();
+                changeMarket();
+            }
+        }else{
+            $(".messageNoMoney").css("display", "block");
+            setTimeout(function(){
+                $(".messageNoMoney").css("display", "none");
+            },1000)
+        }
+        changeInventory();
+        changeMarket();
+    }
+
+
     $("#saveGame").click(function(){
         saveGame();
     });
 
     $("#addAutoNumberPlus1").click(function(){
-        if (money < autoNumberIncrementPrice){
+        if (money < upgrades.cost[1]){
             $(".messageNoMoney").css("display", "block");
         }else{
-            autoNumberIncrementCount++;
-            money -= autoNumberIncrementPrice;
-            if(autoNumberIncrementCount > 0){
-                var totalIncrease = autoNumber * autoNumberIncrementCount;
-                autoNumberPlus += (totalIncrease-(autoNumber*(autoNumberIncrementCount-1)));
-            }
-            autoNumberIncrementPrice = Math.round(autoNumberIncrementPrice * 1.15);
+            buyMaxUpgrade(1);
         }
     });
 
     $("#autoNumber").click(function(){
-        if(money < autoNumberPrice){
+        if(money < upgrades.cost[0]){
             $(".messageNoMoney").css("display", "block");
             $(".messageNoMoney").css("text-align", "center");
             $(".messageNoMoney").css("font-size", "20px")
         }else{
-            money -= autoNumberPrice;
-            if (autoNumberIncrementCount > 0){
-                autoNumberPlus += (1+autoNumberIncrementCount);
-            }else{
-                autoNumberPlus ++
-            }
-            
-            autoNumber++;
-            autoNumberPrice = Math.round(1.1 * autoNumberPrice);
-            $(".messageNoMoney").css("display", "none");
+            buyMaxUpgrade(0);
             changeInventory();
             changeMarket();
+            $(".messageNoMoney").css("display", "none");
         }
         
     });
@@ -89,9 +142,9 @@ $(document).ready(function(){
         }else{
             $("#number").html("Number: " + number);
         }
-        $("#autoNumber").html("Buy [1] Auto Number ($" + autoNumberPrice + ")" + "<br>" + "[" + autoNumber + "]" + "<br>" + "Increments by " + (1+autoNumberIncrementCount) + " per second" + "<br>" + "Total: " + (autoNumber*(1+autoNumberIncrementCount))); 
+        $("#autoNumber").html("Buy [1] Auto Number ($" + upgrades.cost[0] + ")" + "<br>" + "[" + upgrades.count[0] + "]" + "<br>" + "Increments by " + (1+upgrades.count[1]) + " per second" + "<br>" + "Total: " + (upgrades.count[0]*(1+upgrades.count[1]))); 
 
-        $("#addAutoNumberPlus1").html("Increase Auto Number increment by 1 ($" + autoNumberIncrementPrice + ")" + "<br>" + "["+autoNumberIncrementCount+"]");
+        $("#addAutoNumberPlus1").html("Increase Auto Number increment by 1 ($" + upgrades.cost[1] + ")" + "<br>" + "["+upgrades.count[1]+"]");
     }
 
     window.onload = function() {
@@ -107,14 +160,14 @@ $(document).ready(function(){
             $("#sellAll").css("display", "none");
         }
 
-        if(money >= autoNumberPrice){
+        if(money >= upgrades.cost[0]){
             $("#autoNumber").css("display", "block");
             $("#autoNumber").css("opacity", 1)
         }else{
             $("#autoNumber").css("display", "block");
             $("#autoNumber").css("opacity", .5);
         }
-        if (money>= autoNumberIncrementPrice){
+        if (money>= upgrades.cost[1]){
             $("#addAutoNumberPlus1").css("opacity", 1)
         }else{
             $("#addAutoNumberPlus1").css("opacity", 0.5);
@@ -134,11 +187,8 @@ $(document).ready(function(){
             money: money,
             numberPlus: numberPlus,
             autoNumberPlus: autoNumberPlus,
-            autoNumberPrice: autoNumberPrice,
             numberPrice: numberPrice,
-            autoNumber: autoNumber,
-            autoNumberIncrementPrice: autoNumberIncrementPrice,
-            autoNumberIncrementCount: autoNumberIncrementCount
+            upgrades: upgrades
         };
         localStorage.setItem("gameSave", JSON.stringify(gameSave));
     }
@@ -149,11 +199,8 @@ $(document).ready(function(){
         if (typeof savedGame.money !== "undefined") money = savedGame.money;
         if (typeof savedGame.numberPlus !== "undefined") numberPlus = savedGame.numberPlus;
         if (typeof savedGame.autoNumberPlus !== "undefined") autoNumberPlus = savedGame.autoNumberPlus;
-        if (typeof savedGame.autoNumberPrice !== "undefined") autoNumberPrice = savedGame.autoNumberPrice;
-        if (typeof savedGame.NumberPrice !== "undefined") NumberPrice = savedGame.NumberPrice;
-        if (typeof savedGame.autoNumber !== "undefined") autoNumber = savedGame.autoNumber;
-        if (typeof savedGame.autoNumberIncrementPrice !== "undefined") autoNumberIncrementPrice = savedGame.autoNumberIncrementPrice;
-        if (typeof savedGame.autoNumberIncrementCount !== "undefined") autoNumberIncrementCount = savedGame.autoNumberIncrementCount;
+        if (typeof savedGame.numberPrice !== "undefined") numberPrice = savedGame.numberPrice;
+        if (typeof savedGame.upgrades !== "undefined") upgrades = savedGame.upgrades;
     }
     //auto save
     setInterval(function(){

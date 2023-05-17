@@ -3,16 +3,20 @@
     <title>Number Go Up Game</title>
     <link rel="stylesheet" href="main.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/break_infinity.js@2"></script>
     <script src="app.js"></script>
 </head>
 <body>
     <div class="content">
+        <div class ="clickbutton">
+            <button id="click">Number Go Up</button>
+        </div>
+
         <div class="menus">
             <div class="main">
-                <button id="click">Number Go Up</button>
                 <button id="visit">Visit Marketplace</button>
             </div>
-
+                
             <div class="marketplace">
                 <div class="sellButtons">
                     <button id="sellAll">Cash in All</button>
@@ -23,6 +27,9 @@
                             <button id="autoNumber">Buy [1] Auto Number ($20)</button>
                             <button id="addAutoNumberPlus1"></button>
                     </div>
+                    <div class="buyMaxes">
+                        <button id="buyMax"><b>Buy Max</b></button>
+                    </div>
                 </div>   
 
                 <button id="return">Return</button>
@@ -30,14 +37,14 @@
                 
             </div>
         </div>
-
         <div class="inventory">
             <p id="money">Money: $0</p>
             <p id="number">Number: 0</p>
         </div>
-        
-        <button id="saveGame">Save Game</button>
-        <button id="resetGame">Reset Game</button>
-        
+
+        <div class="options">
+            <button id="saveGame">Save Game</button>
+            <button id="resetGame">Reset Game</button>
+        </div>
     </div>
 </body>
